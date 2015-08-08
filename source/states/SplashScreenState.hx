@@ -3,6 +3,7 @@ package states;
 import flixel.text.FlxText;
 import flixel.FlxG;
 import flixel.FlxState;
+import flixel.system.scaleModes.PixelPerfectScaleMode;
 
 using flixel.util.FlxSpriteUtil;
 
@@ -13,6 +14,9 @@ class SplashScreenState extends FlxState {
 
     override public function create(): Void {
         super.create();
+
+        var fixedSM : flixel.system.scaleModes.PixelPerfectScaleMode = new PixelPerfectScaleMode();
+        FlxG.scaleMode = fixedSM;
 
         duration = 2;
         frames = 0;

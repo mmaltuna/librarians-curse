@@ -1,34 +1,44 @@
 package entities;
 
-import flixel.FlxSprite;
-import flixel.util.FlxColor;
+import flixel.util.FlxAngle;
+using flixel.util.FlxSpriteUtil;
 
-class Ball extends FlxSprite {
+import states.PlayState;
 
-    public static inline var TRANSPARENT_BG: Int = 0xFFFF00FF;
+class Ball extends Entity
+{
+	public var catchable : Bool;
 
-    private var thrown: Bool;
+	public function new(X : Float, Y : Float, World : PlayState) {
+		super(X, Y, World);
 
-    public function new() {
-        super(0, 0);
+		loadGraphic("assets/images/ball.png");
+		setSize(8, 8);
+		offset.set(4, 4);
+	}
 
-        thrown = false;
-        loadGraphic("assets/images/ball.png", 16, 16);
-        replaceColor(TRANSPARENT_BG, FlxColor.TRANSPARENT);
-    }
+	public function init(X : Float, Y : Float, Alpha : Float, Speed : Float) : Void {
+		
+		x = X;
+		y = Y;
 
-    public override function draw(): Void {
-        if (thrown) {
-            loadGraphic("assets/images/no-ball.png", 16, 16);
-        } else {
-            loadGraphic("assets/images/ball.png", 16, 16);
-        }
-        replaceColor(TRANSPARENT_BG, FlxColor.TRANSPARENT);
+		FlxAngle.rotatePoint(Speed, 0, 0, 0, Alpha, velocity);
 
-        super.draw();
-    }
+		elasticity = 0.4;
 
-    public function setThrown(isThrown: Bool): Void {
-        thrown = isThrown;
-    }
+		trace(drag);
+		drag.set(50, 50);
+
+		catchable = false;
+	}
+
+	override public function update() : Void
+	{
+		if (!catchable) {
+			if (!overlaps(world.player))
+				catchable = true;
+		}
+
+		super.update();
+	}
 }
