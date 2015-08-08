@@ -45,6 +45,6 @@ class TitleScreenState extends FlxState
 	}
 
 	public function clickNewGame(): Void {
-		FlxG.switchState(new PlayState(1));
+		FlxG.switchState(new PlayState());
 	}
 }
