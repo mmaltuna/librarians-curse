@@ -6,35 +6,45 @@ import flixel.FlxState;
 import flixel.text.FlxText;
 import flixel.ui.FlxButton;
 import flixel.util.FlxMath;
+import flixel.util.FlxDestroyUtil;
 
-/**
- * A FlxState which can be used for the game's menu.
- */
+using flixel.util.FlxSpriteUtil;
+
 class TitleScreenState extends FlxState
 {
-	/**
-	 * Function that is called up when to state is created to set it up.
-	 */
-	override public function create():Void
-	{
+
+	private var newGameButton: FlxButton;
+	private var continueButton: FlxButton;
+
+	override public function create(): Void {
 		super.create();
-		add(new FlxText(100, 50, 100, "New game"));
+		add(new FlxText(100, 50, 100, "Librarian's Curse").screenCenter(true, false));
+
+		newGameButton = new FlxButton(160, 80, "New Game", clickNewGame);
+		continueButton = new FlxButton(160, 100, "Continue", null);
+
+		add(newGameButton);
+		add(continueButton);
+
+		newGameButton.screenCenter(true, false);
+		continueButton.screenCenter(true, false);
 	}
 
-	/**
-	 * Function that is called when this state is destroyed - you might want to
-	 * consider setting all objects this state uses to null to help garbage collection.
-	 */
-	override public function destroy():Void
-	{
+	override public function destroy(): Void {
 		super.destroy();
+
+		newGameButton = FlxDestroyUtil.destroy(newGameButton);
+		continueButton = FlxDestroyUtil.destroy(continueButton);
 	}
 
 	/**
 	 * Function that is called once every frame.
 	 */
-	override public function update():Void
-	{
+	override public function update(): Void {
 		super.update();
+	}
+
+	public function clickNewGame(): Void {
+		FlxG.switchState(new PlayState(1));
 	}
 }
