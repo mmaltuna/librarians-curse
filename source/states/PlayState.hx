@@ -13,7 +13,7 @@ class PlayState extends FlxState {
 	private var hud: Hud;
 
 	override public function create(): Void {
-		hud = new Hud();
+		hud = new Hud(0, 224);
 		add(hud);
 
 		super.create();

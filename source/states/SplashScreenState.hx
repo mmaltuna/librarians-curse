@@ -16,7 +16,8 @@ class SplashScreenState extends FlxState {
 
         duration = 2;
         frames = 0;
-        add(new FlxText(100, 50, 100, "TwoLegged Studio presents...").screenCenter());
+        add(new FlxText(100, 70, 150, "CHRINOS JAPAN CORP.").screenCenter(true, false));
+        add(new FlxText(100, 90, 75, "presents...").screenCenter(true, false));
     }
 
     override public function update(): Void {
