@@ -15,7 +15,7 @@ import entities.Player;
 import entities.Ball;
 
 class PlayState extends FlxState {
-	
+
 	var wallColor : Int = 0xFF226900;
 	var counterColor : Int = 0xFF888888;
 
@@ -48,7 +48,7 @@ class PlayState extends FlxState {
 
 		counterArea = new FlxRect(4, FlxG.height - 26, 68, 10);
 
-		player = new Player(8, FlxG.height - 32, this);
+		player = new Player(8, FlxG.height - 24, this);
 		add(player);
 
 		hud = new Hud(0, FlxG.height - 16);
@@ -62,7 +62,7 @@ class PlayState extends FlxState {
 	}
 
 	override public function update(): Void {
-		
+
 		FlxG.collide(walls, player);
 		FlxG.collide(counter, player);
 		FlxG.collide(walls, player.balls);

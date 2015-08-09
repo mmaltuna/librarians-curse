@@ -64,10 +64,10 @@ class Player extends Entity {
         world.add(balls);
 
         targetHud = new FlxSprite(x + playerWidth/2 - arrowLength - arrowOffset,
-            y + playerHeight/2 - arrowLength - arrowOffset).makeGraphic(48, 48, 0x66000000);
+            y + playerHeight/2 - arrowLength - arrowOffset).makeGraphic(48, 48, 0x00000000);
         world.add(targetHud);
 
-        shootAngle = 90;
+        shootAngle = 270;
 
         state = State.Movement;
     }
@@ -76,6 +76,8 @@ class Player extends Entity {
 
         switch (state) {
             case State.Movement:
+                hideTargetHud();
+
                 // Handle movement
                 movement();
 
@@ -87,26 +89,23 @@ class Player extends Entity {
             case State.Shooting:
 
                 if (!alreadyShot) {
-
                     if (FlxG.keys.anyPressed(["LEFT"])) {
                         shootAngle = angleLerp(shootAngle, -angleDelta);
                     } else if (FlxG.keys.anyPressed(["RIGHT"])) {
                         shootAngle = angleLerp(shootAngle, angleDelta);
                     }
 
-                    drawArrow();
+                    drawTargetHud();
 
                     if (FlxG.keys.anyJustReleased(["A", "Z"])) {
                         // Shoot
                         shoot();
-
                         color = 0xFF0000FF;
 
                         timer.start(shootDelayTime, function(_t:FlxTimer){
                             alreadyShot = true;
                             state = State.Movement;
                         });
-
                     } else if (FlxG.keys.anyJustPressed(["DOWN"])) {
                         state = State.Movement;
                     }
@@ -195,10 +194,10 @@ class Player extends Entity {
         }
     }
 
-    private function drawArrow() : Void {
+    private function drawTargetHud() : Void {
+        hideTargetHud();
         targetHud.x = x + playerWidth/2 - arrowLength - arrowOffset;
         targetHud.y = y + playerHeight/2 - arrowLength - arrowOffset;
-        targetHud = targetHud.makeGraphic(48, 48, 0x66000000);
 
         var cos : Float = Math.cos(shootAngle * (Math.PI/180));
         var sin : Float = Math.sin(shootAngle * (Math.PI/180));
@@ -213,6 +212,10 @@ class Player extends Entity {
             boxOffset + targetY, { color: 0xFFAA11AA, thickness: 1});
     }
 
+    private function hideTargetHud() : Void {
+        FlxSpriteUtil.fill(targetHud, 0x00000000);
+    }
+
     public function inCounter() : Bool {
         return world.counterArea.containsFlxPoint(this.getMidpoint());
     }
@@ -220,15 +223,7 @@ class Player extends Entity {
     public static function angleLerp(Angle : Float, Delta : Float) : Float
     {
         Angle += Delta;
-
-        if (Angle >= 360)
-            Angle = Angle - 360;
-        else if (Angle < 0)
-            Angle = 360 + Angle;
-
-        trace(Angle);
-
-        return Angle;
+        return Math.min(360, Math.max(180, Angle));
     }
 }
 
