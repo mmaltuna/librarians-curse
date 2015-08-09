@@ -20,6 +20,8 @@ class Player extends Entity {
     var speed: Float = 100;
     var shootDelayTime: Float = 0.15;
     var angleDelta : Float = 5;
+    var playerWidth : Float = 12;
+    var playerHeight : Float = 8;
 
     public var balls: FlxTypedGroup<Ball>;
 
@@ -28,7 +30,9 @@ class Player extends Entity {
     var alreadyShot: Bool;
     var shootAngle : Float;
 
-    var arrow : FlxSprite;
+    var targetHud : FlxSprite;
+    var arrowLength : Float = 12;
+    var arrowOffset : Float = 12;
 
     var pointer : FlxSprite;
 
@@ -38,7 +42,7 @@ class Player extends Entity {
         loadGraphic("assets/images/char.png", true, 16, 16);
         replaceColor(TRANSPARENT_BG, FlxColor.TRANSPARENT);
 
-        setSize(12, 8);
+        setSize(playerWidth, playerHeight);
         offset.set(2, 8);
 
         animation.add("u", [4, 5, 6, 7], 10, true);
@@ -59,10 +63,9 @@ class Player extends Entity {
         }
         world.add(balls);
 
-        arrow = new FlxSprite(x, y).makeGraphic(48, 48, 0x00000000);
-        // world.add(arrow);
-        pointer = new FlxSprite(x, y).makeGraphic(1, 1, 0xFFA111A1);
-        world.add(pointer);
+        targetHud = new FlxSprite(x + playerWidth/2 - arrowLength - arrowOffset,
+            y + playerHeight/2 - arrowLength - arrowOffset).makeGraphic(48, 48, 0x66000000);
+        world.add(targetHud);
 
         shootAngle = 90;
 
@@ -80,7 +83,7 @@ class Player extends Entity {
                 handleShooting();
 
                 color = 0xFFFFFFFF;
-            
+
             case State.Shooting:
 
                 if (!alreadyShot) {
@@ -193,19 +196,21 @@ class Player extends Entity {
     }
 
     private function drawArrow() : Void {
-        var offsetLength : Float = 4;
-        var arrowLength : Float = 12;
+        targetHud.x = x + playerWidth/2 - arrowLength - arrowOffset;
+        targetHud.y = y + playerHeight/2 - arrowLength - arrowOffset;
+        targetHud = targetHud.makeGraphic(48, 48, 0x66000000);
+
         var cos : Float = Math.cos(shootAngle * (Math.PI/180));
         var sin : Float = Math.sin(shootAngle * (Math.PI/180));
-        var offsetX : Float = getMidpoint().x + cos * offsetLength;
-        var offsetY : Float = getMidpoint().y + sin * offsetLength;
+
+        var boxOffset : Float = arrowOffset + arrowLength; // half of the bounding box side
+        var offsetX : Float = cos * arrowOffset;
+        var offsetY : Float = sin * arrowOffset;
         var targetX : Float = offsetX + cos * arrowLength;
         var targetY : Float = offsetY + sin * arrowLength;
 
-        // FlxSpriteUtil.drawLine(arrow, offsetX, offsetY, targetX, targetY, { color: 0xFFAA11AA, thickness: 1});
-        // arrow.draw();
-        pointer.x = targetX;
-        pointer.y = targetY;
+        FlxSpriteUtil.drawLine(targetHud, boxOffset + offsetX, boxOffset + offsetY, boxOffset + targetX,
+            boxOffset + targetY, { color: 0xFFAA11AA, thickness: 1});
     }
 
     public function inCounter() : Bool {
