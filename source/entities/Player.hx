@@ -4,6 +4,7 @@ import flixel.FlxSprite;
 import flixel.util.FlxColor;
 import flixel.util.FlxAngle;
 import flixel.util.FlxTimer;
+import flixel.util.FlxPoint;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.group.FlxTypedGroup;
@@ -33,7 +34,7 @@ class Player extends Entity {
 
     var targetHud : FlxSprite;
     var arrowLength : Float = 12;
-    var arrowOffset : Float = 12;
+    var arrowOffset : Float = 6;
 
     var pointer : FlxSprite;
 
@@ -120,14 +121,17 @@ class Player extends Entity {
         super.update();
     }
 
+    function getShootingOffset() : FlxPoint {
+        return new FlxPoint(getMidpoint().x, y-6);
+    }
+
     function shoot() : Void {
 
-        var offsetX : Float = getMidpoint().x;
-        var offsetY : Float = y - 6;
+        var offset : FlxPoint = getShootingOffset();
 
         var ball : Ball = balls.getFirstDead();
         ball.revive();
-        ball.init(offsetX, offsetY, shootAngle, shootPower);
+        ball.init(Std.int(offset.x), Std.int(offset.y), shootAngle, shootPower);
     }
 
     function handleShooting() : Void {
@@ -206,9 +210,11 @@ class Player extends Entity {
     }
 
     private function drawTargetHud() : Void {
+        
         hideTargetHud();
-        targetHud.x = x + playerWidth/2 - arrowLength - arrowOffset;
-        targetHud.y = y + playerHeight/2 - arrowLength - arrowOffset;
+
+        targetHud.x = getShootingOffset().x - arrowLength - arrowOffset;
+        targetHud.y = getShootingOffset().y - arrowLength - arrowOffset;
 
         var cos : Float = Math.cos(shootAngle * (Math.PI/180));
         var sin : Float = Math.sin(shootAngle * (Math.PI/180));

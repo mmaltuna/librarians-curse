@@ -19,8 +19,8 @@ class Ball extends Entity
 
 	public function init(X : Float, Y : Float, Alpha : Float, Speed : Float) : Void {
 		
-		x = X;
-		y = Y;
+		x = X - width/2;
+		y = Y - height/2;
 
 		FlxAngle.rotatePoint(Speed, 0, 0, 0, Alpha, velocity);
 
