@@ -18,6 +18,7 @@ class Player extends Entity {
 
     var MaxBalls : Int = 3;
     var speed: Float = 100;
+    var shootPower : Float = 300;
     var shootDelayTime: Float = 0.15;
     var angleDelta : Float = 5;
     var playerWidth : Float = 12;
@@ -98,6 +99,7 @@ class Player extends Entity {
                     drawTargetHud();
 
                     if (FlxG.keys.anyJustReleased(["A", "Z"])) {
+                        
                         // Shoot
                         shoot();
                         color = 0xFF0000FF;
@@ -106,6 +108,7 @@ class Player extends Entity {
                             alreadyShot = true;
                             state = State.Movement;
                         });
+
                     } else if (FlxG.keys.anyJustPressed(["DOWN"])) {
                         state = State.Movement;
                     }
@@ -122,13 +125,14 @@ class Player extends Entity {
         var offsetX : Float = getMidpoint().x;
         var offsetY : Float = y - 6;
 
-        var ball : Ball = balls.recycle(Ball);
-        ball.init(offsetX, offsetY, shootAngle, 200);
+        var ball : Ball = balls.getFirstDead();
+        ball.revive();
+        ball.init(offsetX, offsetY, shootAngle, shootPower);
     }
 
     function handleShooting() : Void {
 
-        if (inCounter() && FlxG.keys.anyJustPressed(["A", "Z"])) {
+        if (inCounter() && FlxG.keys.anyJustPressed(["A", "Z"]) && balls.getFirstDead() != null) {
             state = State.Shooting;
             alreadyShot = false;
         }
@@ -176,22 +180,29 @@ class Player extends Entity {
             }
 
             FlxAngle.rotatePoint(speed, 0, 0, 0, angle, velocity);
-
-            if (velocity.x != 0 || velocity.y != 0) {
-                switch (facing) {
-                    case FlxObject.UP:
-                        animation.play("u");
-                    case FlxObject.DOWN:
-                        animation.play("d");
-                    case FlxObject.LEFT:
-                        animation.play("l");
-                    case FlxObject.RIGHT:
-                        animation.play("r");
-                }
-
-                animation.paused = false;
-            }
         }
+
+        if (velocity.x != 0 || velocity.y != 0) {
+            switch (facing) {
+                case FlxObject.UP:
+                    animation.play("u");
+                case FlxObject.DOWN:
+                    animation.play("d");
+                case FlxObject.LEFT:
+                    animation.play("l");
+                case FlxObject.RIGHT:
+                    animation.play("r");
+            }
+
+            animation.paused = false;
+        } else {
+
+            if (inCounter()) {
+                animation.play("u");
+                animation.paused = true;
+            }
+
+        } 
     }
 
     private function drawTargetHud() : Void {

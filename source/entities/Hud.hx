@@ -8,9 +8,13 @@ import flixel.FlxG;
 
 using flixel.util.FlxSpriteUtil;
 
+import states.PlayState;
+
 class Hud extends FlxTypedGroup<FlxSprite> {
 
     public static inline var TRANSPARENT_BG: Int = 0xFFFF00FF;
+
+    private var world : PlayState;
 
     private var x: Int;
     private var y: Int;
@@ -23,11 +27,14 @@ class Hud extends FlxTypedGroup<FlxSprite> {
     private var cashIndicator: FlxText;
     private var clock: FlxText;
 
-    public function new(x: Int, y: Int) {
+    public function new(x: Int, y: Int, World: PlayState) {
+        
         super();
 
         this.x = x;
         this.y = y;
+
+        this.world = World;
 
         cash = 470;
         time = 5;
@@ -54,5 +61,20 @@ class Hud extends FlxTypedGroup<FlxSprite> {
         add(clock);
 
         balls[2].setThrown(true);
+    }
+
+    override public function update() : Void {
+
+        var availableBalls : Int = world.player.balls.countDead();
+
+        for (i in 0...availableBalls) {
+            balls[i].setThrown(false);
+        }
+
+        for (i in availableBalls...balls.length) {
+            balls[i].setThrown(true);
+        }
+
+        super.update();
     }
 }
