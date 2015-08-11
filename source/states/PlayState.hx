@@ -10,10 +10,12 @@ import flixel.ui.FlxButton;
 import flixel.util.FlxMath;
 import flixel.util.FlxRect;
 import flixel.util.FlxRandom;
+import flixel.util.FlxTimer;
 
 import entities.Hud;
 import entities.Player;
 import entities.Ball;
+import entities.Curse;
 
 class PlayState extends FlxState {
 
@@ -21,8 +23,12 @@ class PlayState extends FlxState {
 	static var counterColor : Int = 0xFF888888;
 	static var shelvesColor : Int = 0xFFFF7D12;
 
-	var hud: Hud;
-	public var player: Player;
+	var duration : Float = 120;	// Seconds
+	var timer : FlxTimer;
+
+	public var hud : Hud;
+	public var player : Player;
+	public var curse : Curse;
 
 	var counter : FlxSprite;
 	var walls : FlxGroup;
@@ -32,6 +38,7 @@ class PlayState extends FlxState {
 	public var counterArea : FlxRect;
 
 	override public function create(): Void {
+		timer = new FlxTimer(duration / 10, onGameTick, 10);
 
 		bgColor = 0xFFFFCB91;
 
@@ -49,6 +56,9 @@ class PlayState extends FlxState {
 		shelves = new FlxGroup();
 		generateShelves(shelves);
 		add(shelves);
+
+		curse = new Curse(4, FlxG.height - 42, this);
+		add(curse);
 
 		counter = new FlxSprite(4, FlxG.height - 38).makeGraphic(76, 12, counterColor);
 		counter.immovable = true;
@@ -78,7 +88,7 @@ class PlayState extends FlxState {
 		FlxG.collide(walls, player.balls);
 		FlxG.collide(shelves, player.balls);
 		FlxG.collide(player.balls);
-		
+
 		FlxG.overlap(player.balls, player, onBallPlayerCollision);
 
 		super.update();
@@ -88,6 +98,13 @@ class PlayState extends FlxState {
 		if (ball.catchable) {
 			ball.kill();
 			player.velocity.set(0, 0);
+		}
+	}
+
+	private function onGameTick(timer : FlxTimer) : Void {
+		hud.tick();
+		if (timer.loopsLeft == 0) {
+			// end game -> switch state
 		}
 	}
 
